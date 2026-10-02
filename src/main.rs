@@ -159,7 +159,7 @@ impl RotationConverter {
     }
 
     fn show_axis_angle(&mut self, ui: &mut egui::Ui) {
-        ui.heading("axis-angle(READ-ONLY)");
+        ui.label("axis-angle(READ-ONLY)");
         let angle = self.rot.angle().to_degrees();
         if let Some(axis) = self.rot.axis() {
             let axis = axis.into_inner();
