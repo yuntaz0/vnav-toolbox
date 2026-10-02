@@ -1,4 +1,4 @@
-use eframe::egui;
+use eframe::egui::{self};
 use nalgebra::{Matrix3, Rotation3, UnitQuaternion};
 
 struct RotationConverter {
@@ -154,6 +154,19 @@ impl RotationConverter {
             let rotation = Rotation3::from_matrix_unchecked(matrix);
 
             self.rot = UnitQuaternion::from_rotation_matrix(&rotation);
+            self.matrix = format_matrix(&self.rot);
+        }
+    }
+
+    fn show_axis_angle(&mut self, ui: &mut egui::Ui) {
+        ui.heading("axis-angle(READ-ONLY)");
+        let angle = self.rot.angle().to_degrees();
+        if let Some(axis) = self.rot.axis() {
+            let axis = axis.into_inner();
+            ui.label(format!("Angle: {angle:.3}"));
+            ui.label(format!("Axis: [{:.4}, {:.4}, {:.4}]", axis.x, axis.y, axis.z));
+        } else {
+            ui.label("identity rotation(axis undefined)");
         }
     }
 
@@ -177,6 +190,9 @@ impl eframe::App for RotationConverter {
 
             ui.separator();
             self.show_matrix(ui);
+
+            ui.separator();
+            self.show_axis_angle(ui);
 
             ui.separator();
             self.reset_btn(ui);
