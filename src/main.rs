@@ -1,3 +1,4 @@
+use chrono::{DateTime, Utc};
 use eframe::egui::{self};
 use nalgebra::{Matrix3, Rotation3, UnitQuaternion};
 use std::time::{SystemTime, UNIX_EPOCH};
@@ -86,6 +87,12 @@ impl Converter {
         if unix_sec_changed {
             self.unix_time_us = (unix_time_sec * 1_000_000.0) as i64;
         }
+    }
+
+    fn show_unix_date(&self, ui: &mut egui::Ui) {
+        let datetime: DateTime<Utc> = DateTime::from_timestamp_micros(self.unix_time_us)
+            .expect("Somehow I cannot convert your microsec to Utc time");
+        ui.label(datetime.format("%Y-%m-%d %H:%M:%S%.6f UTC").to_string());
     }
 
     fn show_rpy(&mut self, ui: &mut egui::Ui) {
@@ -250,6 +257,8 @@ impl eframe::App for Converter {
                 self.show_unix_ms(&mut columns[1]);
                 columns[1].separator();
                 self.show_unix_us(&mut columns[1]);
+                columns[1].separator();
+                self.show_unix_date(&mut columns[1]);
             });
             ui.separator();
             self.show_reset_btn(ui);
